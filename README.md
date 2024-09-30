@@ -38,3 +38,7 @@ Sair: Finaliza a sessão e retorna ao menu inicial.
 
 Sair do Sistema
 Para encerrar o programa, escolha a opção 3 no menu inicial.
+
+Nome: Dante Ryuichi Kawazu Matrícula: 24.124.008-4
+Nome: Luan  Matrícula:
+Nome: Davi  Matrícula:
