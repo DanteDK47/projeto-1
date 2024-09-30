@@ -1,154 +1,98 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-#define MAX_USERS 10
+#define MAX_USUARIOS 100
 
 typedef struct {
     char cpf[12];
     char senha[20];
     float saldo_reais;
-    float saldo_bitcoin;
-    float saldo_ethereum;
-    float saldo_ripple;
+    float saldo_btc;
+    float saldo_eth;
+    float saldo_xrp;
 } Usuario;
 
-Usuario usuarios[MAX_USERS];
+Usuario usuarios[MAX_USUARIOS];
 int total_usuarios = 0;
+
+void cadastrar_usuario() {
+    printf("Digite o CPF: ");
+    scanf("%s", usuarios[total_usuarios].cpf);
+    printf("Digite a senha: ");
+    scanf("%s", usuarios[total_usuarios].senha);
+    usuarios[total_usuarios].saldo_reais = 0;
+    usuarios[total_usuarios].saldo_btc = 0;
+    usuarios[total_usuarios].saldo_eth = 0;
+    usuarios[total_usuarios].saldo_xrp = 0;
+    total_usuarios++;
+}
 
 int login(char cpf[], char senha[]) {
     for (int i = 0; i < total_usuarios; i++) {
         if (strcmp(usuarios[i].cpf, cpf) == 0 && strcmp(usuarios[i].senha, senha) == 0) {
-            return i;
+            return i;  // Retorna o índice do usuário
         }
     }
-    return -1;
+    return -1;  // Não encontrou
 }
 
-void cadastrar_usuario() {
-    if (total_usuarios >= MAX_USERS) {
-        printf("Limite de usuários cadastrados atingido.\n");
-        return;
-    }
-
-    Usuario novo_usuario;
-    printf("Digite o CPF (11 dígitos): ");
-    scanf("%s", novo_usuario.cpf);
-    
-    printf("Digite a senha: ");
-    scanf("%s", novo_usuario.senha);
-
-    novo_usuario.saldo_reais = 0.0;
-    novo_usuario.saldo_bitcoin = 0.0;
-    novo_usuario.saldo_ethereum = 0.0;
-    novo_usuario.saldo_ripple = 0.0;
-
-    usuarios[total_usuarios++] = novo_usuario;
-    printf("Usuário cadastrado com sucesso!\n");
+void consultar_saldo(int indice) {
+    printf("Saldo em Reais: %.2f\n", usuarios[indice].saldo_reais);
+    printf("Saldo em Bitcoin: %.2f\n", usuarios[indice].saldo_btc);
+    printf("Saldo em Ethereum: %.2f\n", usuarios[indice].saldo_eth);
+    printf("Saldo em Ripple: %.2f\n", usuarios[indice].saldo_xrp);
 }
 
-void consultar_saldo(Usuario *user) {
-    printf("Saldo de Reais: %.2f\n", user->saldo_reais);
-    printf("Saldo de Bitcoin: %.4f BTC\n", user->saldo_bitcoin);
-    printf("Saldo de Ethereum: %.4f ETH\n", user->saldo_ethereum);
-    printf("Saldo de Ripple: %.4f XRP\n", user->saldo_ripple);
-}
-
-void depositar_reais(Usuario *user, float valor) {
-    user->saldo_reais += valor;
-    printf("Depósito realizado! Novo saldo de reais: %.2f\n", user->saldo_reais);
-}
-
-void sacar_reais(Usuario *user, float valor, char senha[]) {
-    if (strcmp(senha, user->senha) == 0 && valor <= user->saldo_reais) {
-        user->saldo_reais -= valor;
-        printf("Saque de %.2f realizado! Novo saldo de reais: %.2f\n", valor, user->saldo_reais);
-    } else {
-        printf("Erro ao sacar. Senha incorreta ou saldo insuficiente.\n");
-    }
-}
-
-void exibir_menu(Usuario *user) {
+void exibir_menu(int indice) {
     int opcao;
     do {
-        printf("\n--- Menu Principal ---\n");
+        printf("\nMenu:\n");
         printf("1. Consultar Saldo\n");
-        printf("2. Depositar Reais\n");
-        printf("3. Sacar Reais\n");
-        printf("4. Sair\n");
+        printf("2. Sair\n");
         printf("Escolha uma opção: ");
         scanf("%d", &opcao);
 
-        switch(opcao) {
+        switch (opcao) {
             case 1:
-                consultar_saldo(user);
+                consultar_saldo(indice);
                 break;
-            case 2: {
-                float valor;
-                printf("Informe o valor para depósito: ");
-                scanf("%f", &valor);
-                depositar_reais(user, valor);
-                break;
-            }
-            case 3: {
-                float valor;
-                char senha[20];
-                printf("Informe o valor para saque: ");
-                scanf("%f", &valor);
-                printf("Digite sua senha: ");
-                scanf("%s", senha);
-                sacar_reais(user, valor, senha);
-                break;
-            }
-            case 4:
+            case 2:
                 printf("Saindo...\n");
                 break;
             default:
-                printf("Opção inválida.\n");
+                printf("Opção inválida!\n");
         }
-    } while(opcao != 4);
+    } while (opcao != 2);
 }
 
 int main() {
     int opcao;
-    char cpf[12];
-    char senha[20];
-
     do {
-        printf("\n--- Sistema de Carteira de Investimentos ---\n");
-        printf("1. Cadastrar Usuário\n");
-        printf("2. Fazer Login\n");
+        printf("\n1. Cadastrar Usuário\n");
+        printf("2. Login\n");
         printf("3. Sair\n");
         printf("Escolha uma opção: ");
         scanf("%d", &opcao);
 
-        switch(opcao) {
-            case 1:
-                cadastrar_usuario();
-                break;
-            case 2:
-                printf("CPF: ");
-                scanf("%s", cpf);
-                printf("Senha: ");
-                scanf("%s", senha);
-                int indice = login(cpf, senha);
-                if (indice != -1) {
-                    printf("Login realizado com sucesso!\n");
-                    exibir_menu(&usuarios[indice]);
-                } else {
-                    printf("CPF ou senha incorretos!\n");
-                }
-                break;
-            case 3:
-                printf("Saindo...\n");
-                break;
-            default:
-                printf("Opção inválida.\n");
+        if (opcao == 1) {
+            cadastrar_usuario();
+        } else if (opcao == 2) {
+            char cpf[12], senha[20];
+            printf("Digite o CPF: ");
+            scanf("%s", cpf);
+            printf("Digite a senha: ");
+            scanf("%s", senha);
+
+            int indice = login(cpf, senha);
+            if (indice != -1) {
+                printf("Login realizado com sucesso!\n");
+                exibir_menu(indice);
+            } else {
+                printf("CPF ou senha incorretos!\n");
+            }
         }
-    } while(opcao != 3);
+    } while (opcao != 3);
 
     return 0;
 }
 
-    return 0;
-}
